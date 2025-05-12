@@ -1,11 +1,7 @@
 #!/bin/bash
 set -e
 
-YELLOW='\033[1;33m'
-GREEN='\033[0;32m'
-NC='\033[0m'
-
-echo "${YELLOW}Installing Sepolia Execution, Consensus, Aztec Node and monitoring...${NC}"
+echo "Installing Sepolia Execution, Consensus, Aztec Node and monitoring..."
 
 # === Setup variables ===
 INSTALL_DIR="aztec-sequencer"
@@ -95,9 +91,9 @@ services:
     environment:
       ETHEREUM_HOSTS: http://127.0.0.1:8545
       L1_CONSENSUS_HOST_URLS: http://127.0.0.1:5052
-      VALIDATOR_PRIVATE_KEY: \${VALIDATOR_PRIVATE_KEY}
-      VALIDATOR_ADDRESS: \${VALIDATOR_ADDRESS}
-      P2P_IP: \${P2P_IP}
+      VALIDATOR_PRIVATE_KEY: ${VALIDATOR_PRIVATE_KEY}
+      VALIDATOR_ADDRESS: ${VALIDATOR_ADDRESS}
+      P2P_IP: ${P2P_IP}
       LOG_LEVEL: debug
     entrypoint: >
       sh -c 'node --no-warnings /usr/src/yarn-project/aztec/dest/bin/index.js start --network alpha-testnet --node --archiver --sequencer'
@@ -169,7 +165,7 @@ echo "Starting all containers..."
 docker compose up -d
 
 # === Info ===
-echo "${GREEN}Setup completed!${NC}"
+echo "Setup completed!"
 echo ""
 echo "Prometheus: http://${P2P_IP}:9090"
 echo "Grafana: http://${P2P_IP}:3000 (login: admin / admin)"
