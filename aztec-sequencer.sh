@@ -7,8 +7,10 @@ echo "Installing Sepolia Execution, Consensus, Aztec Node and monitoring..."
 INSTALL_DIR="aztec-sequencer"
 mkdir -p $INSTALL_DIR && cd $INSTALL_DIR
 
+echo "Please provide the following information:"
 read -p "Enter Ethereum PRIVATE KEY: " VALIDATOR_PRIVATE_KEY
 read -p "Enter Ethereum ADDRESS (0x...): " VALIDATOR_ADDRESS
+echo ""
 
 # JWT for Geth <-> Lighthouse communication
 mkdir -p jwt
