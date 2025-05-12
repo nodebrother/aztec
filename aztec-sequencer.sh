@@ -5,8 +5,7 @@ echo "Installing Sepolia Execution, Consensus, Aztec Node and monitoring..."
 
 # === Setup variables ===
 INSTALL_DIR="aztec-sequencer"
-mkdir -p "$INSTALL_DIR"
-cd "$INSTALL_DIR"
+mkdir -p $INSTALL_DIR && cd $INSTALL_DIR
 
 read -p "Enter Ethereum PRIVATE KEY: " VALIDATOR_PRIVATE_KEY
 read -p "Enter Ethereum ADDRESS (0x...): " VALIDATOR_ADDRESS
