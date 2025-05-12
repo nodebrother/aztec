@@ -1,13 +1,20 @@
 #!/bin/bash
 set -e
 
-echo "Installing Sepolia Execution, Consensus, Aztec Node and monitoring..."
+# Define color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+echo -e "${BLUE}Installing Sepolia Execution, Consensus, Aztec Node, and monitoring...${NC}"
 
 # === Setup variables ===
 INSTALL_DIR="aztec-sequencer"
 mkdir -p $INSTALL_DIR && cd $INSTALL_DIR
 
-echo "Please provide the following information:"
+echo -e "${YELLOW}Please provide the following information:${NC}"
 read -p "Enter Ethereum PRIVATE KEY: " VALIDATOR_PRIVATE_KEY
 read -p "Enter Ethereum ADDRESS (0x...): " VALIDATOR_ADDRESS
 echo ""
@@ -15,28 +22,28 @@ echo ""
 # JWT for Geth <-> Lighthouse communication
 mkdir -p jwt
 openssl rand -hex 32 > jwt/jwt.hex
-echo "JWT generated"
+echo -e "${GREEN}JWT generated${NC}"
 
 # Get public IP for P2P communications
 P2P_IP=$(curl -s ipv4.icanhazip.com)
-echo "Your public IP: $P2P_IP"
+echo -e "${GREEN}Your public IP: $P2P_IP${NC}"
 
 # === Install Docker if not present ===
 if ! command -v docker &> /dev/null; then
-    echo "Installing Docker..."
+    echo -e "${YELLOW}Installing Docker...${NC}"
     apt update
     apt install -y curl gnupg apt-transport-https ca-certificates software-properties-common
-    
+
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker.gpg
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker.gpg] \
       https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | \
       tee /etc/apt/sources.list.d/docker.list
-    
+
     apt update
     apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
     systemctl enable docker && systemctl restart docker
 else
-    echo "Docker already installed, skipping..."
+    echo -e "${GREEN}Docker already installed, skipping...${NC}"
 fi
 
 # === Create docker-compose.yml ===
@@ -136,7 +143,7 @@ scrape_configs:
   - job_name: "geth"
     static_configs:
       - targets: ["execution:6060"]
-  
+
   - job_name: "lighthouse"
     static_configs:
       - targets: ["consensus:5054"]
@@ -159,15 +166,15 @@ chmod +x validator_cron.sh
 # Add cron job to run daily at 21:49:12 UTC
 (crontab -l 2>/dev/null || echo "") | grep -v "validator_cron.sh" | { cat; echo "12 49 21 * * $PWD/validator_cron.sh >> $PWD/validator_cron.log 2>&1"; } | crontab -
 
-echo "Cron job set to run daily at 21:49:12 UTC"
+echo -e "${GREEN}Cron job set to run daily at 21:49:12 UTC${NC}"
 
 # === Launch everything ===
-echo "Starting all containers..."
+echo -e "${BLUE}Starting all containers...${NC}"
 docker compose up -d
 
 # === Info ===
-echo "Setup completed!"
+echo -e "${GREEN}Setup completed!${NC}"
 echo ""
-echo "Prometheus: http://${P2P_IP}:9090"
-echo "Grafana: http://${P2P_IP}:3000 (login: admin / admin)"
-echo "To check logs: docker compose logs --tail 100 -f"
+echo -e "${YELLOW}Prometheus: http://${P2P_IP}:9090${NC}"
+echo -e "${YELLOW}Grafana: http://${P2P_IP}:3000 (login: admin / admin)${NC}"
+echo -e "${YELLOW}To check logs: docker compose logs --tail 100 -f${NC}"
